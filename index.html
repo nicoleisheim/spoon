@@ -80,8 +80,8 @@ h2{font-family:var(--f-display);font-weight:700;font-size:17px;margin:0;letter-s
 .spoon{width:26px;height:30px;stroke:none}
 .spoon{fill:var(--accent)}
 .spoon.res{fill:var(--warn)}
-.spoon.empty{fill:none;stroke:var(--line);stroke-width:1.6}
-.spoon.borrow{fill:var(--over-soft);stroke:var(--over);stroke-width:1.4;stroke-dasharray:2 2}
+.spoon.usedup{fill:var(--line);opacity:.55}
+.spoon.borrow{fill:rgba(90,0,30,.5)}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
 .legend span{display:inline-flex;align-items:center;gap:5px}
 .legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
@@ -145,6 +145,36 @@ nav.tabs a[aria-current="page"]{color:#fff;background:var(--accent);font-weight:
 .modal .card{max-width:420px;width:100%}
 .hint{font-size:14px;color:var(--muted);background:var(--accent-soft);border-radius:14px;padding:10px 12px}
 @media (prefers-reduced-motion:no-preference){.toast{animation:up .2s ease-out}@keyframes up{from{transform:translate(-50%,8px);opacity:0}}}
+
+.top{display:flex;align-items:center;gap:8px}
+.top .daynav{flex:1;min-width:0}
+.top h1{flex:1}
+.gear{color:var(--muted)}
+.iconbtn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.planline{font-size:14px;color:var(--muted)}
+.sec{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.empty{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:14px 8px;color:var(--muted);font-size:15px}
+.empty b{font-family:var(--f-display);color:var(--ink);font-size:16px}
+.item.planned .n{color:var(--muted)}
+details.fold{background:var(--card);border-radius:24px;box-shadow:var(--shadow);padding:4px 18px}
+details.fold summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:52px;cursor:pointer;font-family:var(--f-display);font-weight:700}
+details.fold summary::-webkit-details-marker{display:none}
+details.fold summary .chev{transition:transform .2s;color:var(--muted);font-size:20px}
+details.fold[open] summary .chev{transform:rotate(90deg)}
+details.fold .inner{display:flex;flex-direction:column;gap:10px;padding:0 0 16px}
+nav.tabs .in{grid-template-columns:1fr auto 1fr;align-items:center;max-width:340px}
+.fab{width:62px;height:62px;border-radius:50%;border:4px solid var(--bg);background:linear-gradient(140deg,var(--hero-a),var(--hero-b));display:grid;place-items:center;margin:-28px 6px 0;padding:0;box-shadow:0 10px 24px rgba(226,71,127,.4)}
+.fab svg{width:28px;height:28px;stroke:#fff;stroke-width:2.6;stroke-linecap:round;fill:none}
+.sheet-bg{position:fixed;inset:0;background:rgba(40,10,25,.4);z-index:8}
+.sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:560px;background:var(--card);border-radius:28px 28px 0 0;padding:10px 18px calc(22px + env(safe-area-inset-bottom));z-index:9;max-height:86%;overflow:auto;display:flex;flex-direction:column;gap:14px;box-shadow:0 -10px 40px rgba(0,0,0,.18)}
+.grab{width:42px;height:5px;border-radius:3px;background:var(--line);margin:0 auto}
+.seg{display:flex;background:var(--bg);border-radius:999px;padding:4px;gap:4px}
+.seg button{flex:1;border:none;background:none;border-radius:999px;padding:9px;min-height:42px;color:var(--muted);font-weight:700}
+.sheet .row input[type=text]{flex-basis:100%}
+.sheet .row input[type=number]{flex:0 0 90px}
+.sheet .row .btn{flex:1}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:sh .22s ease-out}@keyframes sh{from{transform:translateY(40px);opacity:.4}}}
 </style>
 </head>
 <body>
@@ -154,10 +184,10 @@ nav.tabs a[aria-current="page"]{color:#fff;background:var(--accent);font-weight:
 <div class="wrap" id="app"></div>
 <nav class="tabs" aria-label="Bereiche"><div class="in">
   <a href="#heute" data-v="heute"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Heute</a>
-  <a href="#planen" data-v="planen"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="17" rx="2"/><path d="M8 2v4M16 2v4M8 11h8M8 15h5"/></svg>Planen</a>
+  <button class="fab" data-a="sheet" aria-label="Aktivität hinzufügen"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
   <a href="#verlauf" data-v="verlauf"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Verlauf</a>
-  <a href="#einstellungen" data-v="einstellungen"><svg viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Anpassen</a>
 </div></nav>
+<div id="sheet"></div>
 <div id="toast"></div>
 <div id="modal"></div>
 
@@ -186,8 +216,8 @@ const toDate=k=>{const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d)
 const addDays=(k,n)=>{const d=toDate(k);d.setDate(d.getDate()+n);return keyOf(d)};
 const longDate=k=>toDate(k).toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
 const shortDate=k=>toDate(k).toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'numeric'});
-const L=n=>n===1||n===-1?'Löffel':'Löffel';
 const used=d=>d&&d.log?d.log.reduce((a,x)=>a+x.cost,0):0;
+const planned=d=>d&&d.plan?d.plan.reduce((a,x)=>a+x.cost,0):0;
 function rawBudget(k){const d=S.days[k];return d&&typeof d.budget==='number'?d.budget:S.settings.base}
 function debtOf(k){const d=S.days[k];if(!d)return 0;return Math.max(0,used(d)-rawBudget(k))}
 function budgetOf(k){const d=S.days[k];if(d&&typeof d.budget==='number')return d.budget;return Math.max(1,S.settings.base-debtOf(addDays(k,-1)))}
@@ -195,10 +225,11 @@ function ensureDay(k){if(!S.days[k])S.days[k]={log:[],plan:[]};const d=S.days[k]
 function hasContent(d){return d&&((d.log&&d.log.length)||(d.plan&&d.plan.length)||d.checkin||d.crash||d.note)}
 
 /* ---------- Ansicht ---------- */
-const VIEWS=['heute','planen','verlauf','einstellungen'];
+const VIEWS=['heute','verlauf','einstellungen'];
 let view=VIEWS.includes(location.hash.slice(1))?location.hash.slice(1):'heute';
 let cur=todayKey();
 let ci={sleep:null,sym:null,adj:0};
+let sheet=null; // null oder 'log' | 'plan'
 let lastUndo=null, toastTimer=null, needRender=false;
 
 /* ---------- Speichern: Konto (db) mit lokalem Cache ---------- */
@@ -206,7 +237,7 @@ let col=null, syncState='local';
 const timers={}, writing={}, again={}, dirty=new Set();
 function setSync(s){syncState=s;const el=$('#sync');if(el)el.outerHTML=syncHTML()}
 function syncHTML(){
-  const m={local:['','Nur auf diesem Gerät'],loading:['','Lädt …'],ok:['ok','Gespeichert'],saving:['','Speichert …'],offline:['warn','Gerade nicht erreichbar – wird nachgeholt'],err:['warn','Speichern fehlgeschlagen']}[syncState];
+  const m={local:['','Nur auf diesem Gerät'],loading:['','Lädt …'],ok:['ok','In deinem Konto gespeichert'],saving:['','Speichert …'],offline:['warn','Gerade nicht erreichbar – wird nachgeholt'],err:['warn','Speichern fehlgeschlagen']}[syncState];
   return `<span class="sync ${m[0]}" id="sync" role="status"><i></i>${m[1]}</span>`;
 }
 function persist(id){
@@ -258,11 +289,11 @@ async function initCloud(){
     if(first&&!snap.metadata.fromCache){
       first=false;
       if(snap.empty){
-        // Erstes Mal mit Konto: vorhandene Gerätedaten übernehmen
         if(Object.keys(S.days).some(k=>hasContent(S.days[k])))writeAll();else setSync('ok');
         return;
       }
     }
+    if(snap.empty&&snap.metadata.fromCache)return;
     const days={};let settings=null;
     snap.docs.forEach(doc=>{
       if(!doc.exists)return;
@@ -270,47 +301,37 @@ async function initCloud(){
       if(doc.id==='settings')settings=v;
       else if(doc.id.startsWith('d-'))days[doc.id.slice(2)]=v;
     });
-    if(snap.empty&&snap.metadata.fromCache)return;
-    // Noch nicht gesendete eigene Änderungen behalten
     dirty.forEach(id=>{if(id==='settings')settings=S.settings;else{const k=id.slice(2);if(S.days[k])days[k]=S.days[k];else delete days[k]}});
     if(settings&&settings.acts)S.settings=settings;
     S.days=days;
     saveLocal();
     if(!snap.metadata.fromCache&&syncState!=='saving')setSync('ok');
     softRender();
-  },err=>{clearTimeout(timer);setSync(err&&err.code==='revoked'?'local':'offline');col=err&&err.code==='revoked'?null:col});
+  },err=>{clearTimeout(timer);if(err&&err.code==='revoked'){col=null;setSync('local')}else setSync('offline')});
 }
 
-/* ---------- Rendering ---------- */
+/* ---------- Bausteine ---------- */
+const ICON={
+  gear:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  back:'<svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>'
+};
 function spoonSVG(cls){return `<svg class="spoon ${cls}" aria-hidden="true"><use href="#sp"/></svg>`}
 function spoonsHTML(budget,u,reserve){
   const rem=budget-u;let h='';
-  for(let i=0;i<budget;i++){
-    if(i<rem)h+=spoonSVG(i<reserve?'res':'');else h+=spoonSVG('empty');
-  }
+  for(let i=0;i<budget;i++)h+=spoonSVG(i<rem?(i<reserve?'res':''):'usedup');
   for(let i=0;i<-rem;i++)h+=spoonSVG('borrow');
   return `<div class="spoons" role="img" aria-label="${Math.max(rem,0)} von ${budget} Löffeln übrig">${h}</div>`;
 }
+function costLabel(c){return c<0?`+${-c}`:`${c}`}
+function gearBtn(){return `<a class="iconbtn gear" href="#einstellungen" aria-label="Anpassen">${ICON.gear}</a>`}
 function dayNav(){
   const t=todayKey();
   const tag=cur===t?'Heute':cur===addDays(t,1)?'Morgen':cur===addDays(t,-1)?'Gestern':'';
-  return `<div class="daynav">
+  return `<div class="top"><div class="daynav">
     <button class="iconbtn" data-a="day" data-d="-1" aria-label="Vorheriger Tag">‹</button>
-    <div class="lbl">${esc(longDate(cur))}${tag?`<small>${tag}</small>`:`<small><button class="btn ghost" style="min-height:28px;padding:2px 10px;font-size:13px" data-a="day" data-d="0">Zu heute</button></small>`}</div>
+    <div class="lbl">${esc(longDate(cur))}${tag?`<small>${tag}</small>`:`<small><button class="btn ghost" style="min-height:26px;padding:2px 10px;font-size:12px" data-a="day" data-d="0">Zu heute</button></small>`}</div>
     <button class="iconbtn" data-a="day" data-d="1" aria-label="Nächster Tag" ${cur>=addDays(t,7)?'disabled':''}>›</button>
-  </div>`;
-}
-function costLabel(c){return c<0?`+${-c}`:`${c}`}
-function chipsHTML(action){
-  return `<div class="chips">${S.settings.acts.map(a=>`<button class="chip" data-a="${action}" data-id="${a.id}"><span>${esc(a.name)}</span><span class="c ${a.cost<0?'neg':''}">${costLabel(a.cost)}</span></button>`).join('')}</div>`;
-}
-function customHTML(action,label){
-  return `<div class="row">
-    <label class="small muted" for="cname" style="width:100%">Etwas anderes</label>
-    <input type="text" id="cname" placeholder="z. B. Wäsche aufhängen" autocomplete="off">
-    <input type="number" id="ccost" value="2" min="-5" max="30" aria-label="Löffel">
-    <button class="btn" data-a="${action}">${label}</button>
-  </div>`;
+  </div>${gearBtn()}</div>`;
 }
 function suggestion(){
   const b=S.settings.base;
@@ -325,76 +346,55 @@ function checkinHTML(){
     <h2 id="ci-h">Wie startest du in den Tag?</h2>
     <div class="q"><label>Schlaf</label>${pills('sleep',['Erholsam','Geht so','Schlecht'])}</div>
     <div class="q"><label>Symptome gerade</label>${pills('sym',['Leicht','Mittel','Stark'])}</div>
-    ${debt?`<div class="hint">Gestern hast du ${debt} ${L(debt)} geliehen. Die sind schon abgezogen.</div>`:''}
+    ${debt?`<div class="hint">Gestern hast du ${debt} Löffel geliehen. Die sind schon abgezogen.</div>`:''}
     <div class="suggest">
       <div><div class="small muted">Vorschlag für heute</div><b>${suggestion()}</b> <span class="muted">Löffel</span></div>
       <div class="stepper"><button data-a="ci-adj" data-d="-1" aria-label="Einen weniger">−</button><button data-a="ci-adj" data-d="1" aria-label="Einen mehr">+</button></div>
     </div>
     <div class="row"><button class="btn" style="flex:1" data-a="ci-start">Mit ${suggestion()} Löffeln starten</button><button class="btn ghost" data-a="ci-skip">Überspringen</button></div>
-    <div class="small muted">Nur ein Vorschlag. Du kennst deinen Körper am besten.</div>
   </section>`;
 }
+
+/* ---------- Seiten ---------- */
 function renderHeute(){
   const d=S.days[cur];const budget=budgetOf(cur);const u=used(d);const rem=budget-u;const res=S.settings.reserve;
+  const plan=(d&&d.plan)||[];const p=planned(d);const log=(d&&d.log)||[];
   let st;
-  if(rem<0)st=['over',`Du hast ${-rem} ${L(-rem)} von morgen geliehen. Morgen startest du mit weniger. Wenn es geht: hinlegen, Reize runter.`];
+  if(rem<0)st=['over',`Du hast ${-rem} Löffel von morgen geliehen. Wenn es geht: hinlegen, Reize runter.`];
   else if(rem===0)st=['over','Dein Budget für heute ist aufgebraucht. Alles Weitere geht auf morgen.'];
-  else if(rem<=res)st=['warn','Du bist in deinem Puffer. Ein guter Moment für eine echte Pause.'];
-  else st=['ok',u===0?'Noch nichts eingetragen. Tippe unten an, was du gemacht hast.':'Du bist in deinem Rahmen.'];
+  else if(rem<=res)st=['warn','Du bist in deinem Puffer. Zeit für eine echte Pause.'];
+  else st=['ok','Du bist in deinem Rahmen.'];
+  let pl='';
+  if(plan.length){const after=rem-p;pl=after<0?`Geplant: ${p} · ${-after} mehr als übrig`:`Geplant: ${p} · danach bleiben ${after}${after<=res?' (Puffer)':''}`}
   const showCI=!(d&&d.checkin)&&cur<=todayKey();
-  const log=(d&&d.log)||[];
+  const time=t=>t?new Date(t).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}):'';
   return `${dayNav()}
   ${showCI?checkinHTML():''}
-  <section class="card hero" aria-label="Löffel heute">
+  <section class="card hero" aria-label="Löffel">
     <div class="big"><b>${Math.max(rem,0)}</b><span>von ${budget} Löffeln übrig</span>
       <span class="stepper" style="margin-left:auto"><button data-a="bud" data-d="-1" aria-label="Budget verringern">−</button><button data-a="bud" data-d="1" aria-label="Budget erhöhen">+</button></span></div>
     ${spoonsHTML(budget,u,res)}
-    <div class="legend"><span><i style="background:var(--accent)"></i>verfügbar</span><span><i style="background:var(--warn)"></i>Puffer</span><span><i style="border:1.5px solid var(--line)"></i>verbraucht</span>${rem<0?'<span><i style="border:1.5px dashed var(--over)"></i>geliehen</span>':''}</div>
+    ${pl?`<div class="planline">${pl}</div>`:''}
     <div class="status ${st[0]}">${st[1]}</div>
   </section>
-  <section class="card" aria-labelledby="log-h">
-    <h2 id="log-h">Was hast du gemacht?</h2>
-    ${chipsHTML('log')}
-    ${customHTML('log-custom','Eintragen')}
-  </section>
+  ${plan.length?`<section class="card" aria-labelledby="pl-h">
+    <div class="sec"><h2 id="pl-h">Geplant</h2><span class="small muted">Antippen = erledigt</span></div>
+    <div class="list">${plan.map(x=>`<div class="item planned"><button class="check" data-a="plan-done" data-id="${x.id}" aria-label="${esc(x.name)} als erledigt eintragen">✓</button><span class="n">${esc(x.name)}</span><span class="c">${costLabel(x.cost)}</span><button class="x" data-a="plan-del" data-id="${x.id}" aria-label="${esc(x.name)} aus dem Plan nehmen">×</button></div>`).join('')}</div>
+  </section>`:''}
   <section class="card" aria-labelledby="done-h">
-    <h2 id="done-h">Eingetragen <span class="muted small">· ${u} ${L(u)}</span></h2>
-    ${log.length?`<div class="list">${log.slice().reverse().map(x=>`<div class="item"><span class="t">${x.t?new Date(x.t).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}):''}</span><span class="n">${esc(x.name)}</span><span class="c">${costLabel(x.cost)}</span><button class="x" data-a="log-del" data-id="${x.id}" aria-label="${esc(x.name)} entfernen">×</button></div>`).join('')}</div>`:'<div class="muted small">Noch nichts.</div>'}
+    <div class="sec"><h2 id="done-h">Gemacht</h2><span class="small muted">${u} Löffel</span></div>
+    ${log.length?`<div class="list">${log.slice().reverse().map(x=>`<div class="item"><span class="t">${time(x.t)}</span><span class="n">${esc(x.name)}</span><span class="c">${costLabel(x.cost)}</span><button class="x" data-a="log-del" data-id="${x.id}" aria-label="${esc(x.name)} entfernen">×</button></div>`).join('')}</div>`
+      :`<div class="empty"><b>Noch nichts eingetragen</b>Tippe unten auf +, um einzutragen oder zu planen.</div>`}
   </section>
-  <section class="card" aria-labelledby="end-h">
-    <h2 id="end-h">Wie geht es dir?</h2>
-    <label class="toggle"><input type="checkbox" id="crash" data-f="crash" ${d&&d.crash?'checked':''}> Crash / PEM heute</label>
-    <label class="small muted" for="note">Notiz (Symptome, Auslöser, was gutgetan hat)</label>
-    <textarea id="note" data-f="note" placeholder="Kurz reicht.">${esc((d&&d.note)||'')}</textarea>
-    ${hasContent(d)?'<button class="btn ghost" data-a="day-reset">Diesen Tag leeren</button>':''}
-  </section>`;
-}
-function renderPlanen(){
-  const d=S.days[cur];const budget=budgetOf(cur);const u=used(d);const plan=(d&&d.plan)||[];
-  const p=plan.reduce((a,x)=>a+x.cost,0);const res=S.settings.reserve;
-  const free=budget-u-res;
-  const tot=Math.max(budget,u+p,1);
-  const w=x=>Math.max(0,x)/tot*100;
-  let msg;
-  if(u+p>budget)msg=['over',`Der Plan liegt ${u+p-budget} ${L(u+p-budget)} über deinem Budget. Was kann warten oder kleiner werden?`];
-  else if(p>free)msg=['warn',`Der Plan reicht in deinen Puffer hinein. Plane Pausen dazwischen ein.`];
-  else msg=['ok',plan.length?`Passt. Danach bleiben dir ${budget-u-p} ${L(budget-u-p)}.`:'Wähle aus, was du vorhast. Die App rechnet mit.'];
-  return `${dayNav()}
-  <section class="card" aria-label="Planübersicht">
-    <div class="big"><b>${p}</b><span>geplant · ${u} verbraucht · Budget ${budget}</span></div>
-    <div class="meter" aria-hidden="true"><i style="width:${w(Math.min(u,budget))}%;background:var(--muted)"></i><i style="width:${w(Math.min(p,Math.max(0,budget-u)))}%;background:var(--accent)"></i><i style="width:${w(u+p-budget)}%;background:var(--over)"></i></div>
-    <div class="legend"><span><i style="background:var(--muted)"></i>verbraucht</span><span><i style="background:var(--accent)"></i>geplant</span><span><i style="background:var(--over)"></i>darüber</span></div>
-    <div class="status ${msg[0]}">${msg[1]}</div>
-  </section>
-  <section class="card" aria-labelledby="pl-h">
-    <h2 id="pl-h">Geplant</h2>
-    ${plan.length?`<div class="list">${plan.map(x=>`<div class="item"><button class="check" data-a="plan-done" data-id="${x.id}" aria-label="${esc(x.name)} als erledigt eintragen">✓</button><span class="n">${esc(x.name)}</span><span class="c">${costLabel(x.cost)}</span><button class="x" data-a="plan-del" data-id="${x.id}" aria-label="${esc(x.name)} aus dem Plan nehmen">×</button></div>`).join('')}</div><div class="small muted">Haken setzen trägt die Aktivität als erledigt ein.</div>`:'<div class="muted small">Noch nichts geplant.</div>'}
-  </section>
-  <section class="card" aria-labelledby="pa-h">
-    <h2 id="pa-h">Hinzufügen</h2>
-    ${chipsHTML('plan-add')}
-    ${customHTML('plan-custom','Planen')}
-  </section>`;
+  <details class="fold" ${d&&(d.note||d.crash)?'open':''}>
+    <summary><span>Notiz &amp; Befinden ${d&&d.crash?'<span class="badge">Crash</span>':''}</span><span class="chev">›</span></summary>
+    <div class="inner">
+      <label class="toggle"><input type="checkbox" id="crash" data-f="crash" ${d&&d.crash?'checked':''}> Crash / PEM heute</label>
+      <label class="small muted" for="note">Symptome, Auslöser, was gutgetan hat</label>
+      <textarea id="note" data-f="note" placeholder="Kurz reicht.">${esc((d&&d.note)||'')}</textarea>
+      ${hasContent(d)?'<button class="btn ghost" data-a="day-reset">Diesen Tag leeren</button>':''}
+    </div>
+  </details>`;
 }
 function renderVerlauf(){
   const t=todayKey();const N=14;const keys=[];for(let i=N-1;i>=0;i--)keys.push(addDays(t,-i));
@@ -408,19 +408,18 @@ function renderVerlauf(){
     const col=v.u>v.b?'var(--over)':v.u>v.b-S.settings.reserve?'var(--warn)':'var(--accent)';
     if(v.has&&v.u>0)bars+=`<rect x="${bx}" y="${y(v.u)}" width="${bw}" height="${Math.max(1,(v.u/max)*ch)}" rx="3" fill="${col}"><title>${shortDate(v.k)}: ${v.u} von ${v.b}</title></rect>`;
     bars+=`<line x1="${x+cw*.12}" x2="${x+cw*.88}" y1="${y(v.b)}" y2="${y(v.b)}" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round" opacity=".55"/>`;
-    const dd=toDate(v.k);
-    bars+=`<text x="${x+cw/2}" y="${H-bot+12}" text-anchor="middle" ${v.k===t?'style="fill:var(--ink);font-weight:700"':''}>${dd.getDate()}</text>`;
+    bars+=`<text x="${x+cw/2}" y="${H-bot+12}" text-anchor="middle" ${v.k===t?'style="fill:var(--ink);font-weight:700"':''}>${toDate(v.k).getDate()}</text>`;
     if(v.crash)bars+=`<circle cx="${x+cw/2}" cy="${H-bot+24}" r="3.6" fill="var(--over)"><title>Crash</title></circle>`;
   });
   const withData=vals.filter(v=>v.has);
   const avg=withData.length?Math.round(withData.reduce((a,v)=>a+v.u,0)/withData.length*10)/10:0;
   const overDays=withData.filter(v=>v.u>v.b).length;
   const crashes=vals.filter(v=>v.crash).length;
-  // Muster: Crash innerhalb von 1–2 Tagen nach Überziehen (alle Daten)
   const allKeys=Object.keys(S.days).filter(k=>S.days[k].crash);
   const after=allKeys.filter(k=>[1,2].some(n=>{const p=addDays(k,-n);return S.days[p]&&used(S.days[p])>rawBudget(p)})).length;
   const list=Object.keys(S.days).filter(k=>hasContent(S.days[k])).sort().reverse().slice(0,30);
-  return `<section class="card" aria-labelledby="v-h">
+  return `<div class="top"><h1>Verlauf</h1>${gearBtn()}</div>
+  <section class="card" aria-labelledby="v-h">
     <h2 id="v-h">Die letzten 14 Tage</h2>
     <svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Löffelverbrauch der letzten 14 Tage">${grid}${bars}</svg>
     <div class="legend"><span><i style="background:var(--accent)"></i>im Rahmen</span><span><i style="background:var(--warn)"></i>im Puffer</span><span><i style="background:var(--over)"></i>überzogen</span><span><i style="height:2px;background:var(--ink);opacity:.55"></i>Budget</span><span><i style="border-radius:50%;background:var(--over)"></i>Crash</span></div>
@@ -434,12 +433,13 @@ function renderVerlauf(){
   <section class="card" aria-labelledby="t-h">
     <h2 id="t-h">Tage</h2>
     ${list.length?`<div class="list">${list.map(k=>{const d=S.days[k],u=used(d),b=budgetOf(k),tot=Math.max(b,u,1);
-      return `<button class="hist" data-a="goto" data-k="${k}"><span class="d">${esc(shortDate(k))}</span><span class="bar"><span class="meter" style="display:flex"><i style="width:${Math.min(u,b)/tot*100}%;background:${u>b?'var(--over)':'var(--accent)'}"></i><i style="width:${Math.max(0,u-b)/tot*100}%;background:var(--over)"></i></span>${d.note?`<span class="small muted" style="display:block;margin-top:4px;overflow-wrap:anywhere">${esc(d.note.length>80?d.note.slice(0,80)+' …':d.note)}</span>`:''}</span><span class="c small" style="font-variant-numeric:tabular-nums">${u}/${b}</span>${d.crash?'<span class="badge">Crash</span>':''}</button>`}).join('')}</div>`:'<div class="muted small">Sobald du Tage einträgst, erscheinen sie hier.</div>'}
+      return `<button class="hist" data-a="goto" data-k="${k}"><span class="d">${esc(shortDate(k))}</span><span class="bar"><span class="meter" style="display:flex"><i style="width:${Math.min(u,b)/tot*100}%;background:${u>b?'var(--over)':'var(--accent)'}"></i><i style="width:${Math.max(0,u-b)/tot*100}%;background:var(--over)"></i></span>${d.note?`<span class="small muted" style="display:block;margin-top:4px;overflow-wrap:anywhere">${esc(d.note.length>80?d.note.slice(0,80)+' …':d.note)}</span>`:''}</span><span class="c small" style="font-variant-numeric:tabular-nums">${u}/${b}</span>${d.crash?'<span class="badge">Crash</span>':''}</button>`}).join('')}</div>`:'<div class="empty"><b>Noch keine Tage</b>Sobald du etwas einträgst, erscheint es hier.</div>'}
   </section>`;
 }
 function renderEinst(){
   const s=S.settings;
-  return `<section class="card" aria-labelledby="b-h">
+  return `<div class="top"><a class="iconbtn" href="#heute" aria-label="Zurück">${ICON.back}</a><h1>Anpassen</h1></div>
+  <section class="card" aria-labelledby="b-h">
     <h2 id="b-h">Dein Grundbudget</h2>
     <div class="row" style="justify-content:space-between"><span>Löffel an einem durchschnittlichen Tag</span><span class="stepper"><button data-a="base" data-d="-1" aria-label="Weniger">−</button><b style="min-width:28px;text-align:center;font-family:var(--f-display)">${s.base}</b><button data-a="base" data-d="1" aria-label="Mehr">+</button></span></div>
     <div class="row" style="justify-content:space-between"><span>Puffer, den du nicht verplanst</span><span class="stepper"><button data-a="res" data-d="-1" aria-label="Weniger">−</button><b style="min-width:28px;text-align:center;font-family:var(--f-display)">${s.reserve}</b><button data-a="res" data-d="1" aria-label="Mehr">+</button></span></div>
@@ -452,8 +452,8 @@ function renderEinst(){
     <button class="btn ghost" data-a="act-add">Aktivität hinzufügen</button>
   </section>
   <section class="card" aria-labelledby="ds-h">
-    <h2 id="ds-h">Daten</h2>
-    <div class="small muted">${col?'Deine Einträge werden in deinem Konto gespeichert und sind nur für dich sichtbar.':'Deine Einträge liegen gerade nur in diesem Browser. Mach ab und zu eine Sicherung.'}</div>
+    <div class="sec"><h2 id="ds-h">Daten</h2>${syncHTML()}</div>
+    <div class="small muted">${col?'Deine Einträge liegen in deinem Konto und sind nur für dich sichtbar.':'Deine Einträge liegen nur in diesem Browser. Mach ab und zu eine Sicherung.'}</div>
     <div class="row"><button class="btn ghost" data-a="export">Sicherung kopieren</button></div>
     <label class="small muted" for="imp">Sicherung wiederherstellen</label>
     <textarea id="imp" placeholder="Kopierte Sicherung hier einfügen"></textarea>
@@ -464,12 +464,40 @@ function renderEinst(){
     <div class="small">Christine Miserandino hat die Spoon Theory 2003 beschrieben: Wer chronisch krank ist, hat pro Tag nur eine begrenzte Zahl Löffel. Jede Tätigkeit kostet welche, auch Duschen oder ein Telefonat. Wer mehr ausgibt, leiht von morgen. Diese App ersetzt keine ärztliche Begleitung; sie hilft dir beim Pacing.</div>
   </section>`;
 }
+
+/* ---------- Blatt (+) ---------- */
+function renderSheet(){
+  const el=$('#sheet');
+  if(!sheet){el.innerHTML='';return}
+  const d=S.days[cur];const rem=budgetOf(cur)-used(d)-planned(d);
+  const isLog=sheet==='log';
+  el.innerHTML=`<div class="sheet-bg" data-a="sheet-close"></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Aktivität hinzufügen">
+    <div class="grab"></div>
+    <div class="sec"><h2>${cur===todayKey()?'Heute':esc(shortDate(cur))}</h2><span class="small muted">${Math.max(rem,0)} Löffel frei</span></div>
+    <div class="seg" role="group" aria-label="Art">
+      <button data-a="sheet-mode" data-m="log" aria-pressed="${isLog}">Gemacht</button>
+      <button data-a="sheet-mode" data-m="plan" aria-pressed="${!isLog}">Geplant</button>
+    </div>
+    <div class="chips">${S.settings.acts.map(a=>`<button class="chip" data-a="pick" data-id="${a.id}"><span>${esc(a.name)}</span><span class="c ${a.cost<0?'neg':''}">${costLabel(a.cost)}</span></button>`).join('')}</div>
+    <div class="row">
+      <input type="text" id="cname" placeholder="Etwas anderes …" autocomplete="off" aria-label="Eigene Aktivität">
+      <input type="number" id="ccost" value="2" min="-5" max="30" aria-label="Löffel">
+      <button class="btn" data-a="pick-custom">${isLog?'Eintragen':'Planen'}</button>
+    </div>
+  </div>`;
+  const f=el.querySelector('.chip');if(f)f.focus({preventScroll:true});
+}
+function openSheet(){sheet=cur>todayKey()?'plan':'log';renderSheet()}
+function closeSheet(){sheet=null;renderSheet()}
+
+/* ---------- Rendering ---------- */
 function render(){
   needRender=false;
-  const title={heute:'Löffel-Budget',planen:'Planen',verlauf:'Verlauf',einstellungen:'Anpassen'}[view];
-  let body=view==='heute'?renderHeute():view==='planen'?renderPlanen():view==='verlauf'?renderVerlauf():renderEinst();
-  $('#app').innerHTML=`<header><h1>${title}</h1>${syncHTML()}</header>${body}`;
+  const body=view==='heute'?renderHeute():view==='verlauf'?renderVerlauf():renderEinst();
+  $('#app').innerHTML=body;
   document.querySelectorAll('nav.tabs a').forEach(a=>a.setAttribute('aria-current',a.dataset.v===view?'page':'false'));
+  if(sheet)renderSheet();
 }
 function softRender(){
   const a=document.activeElement;
@@ -497,21 +525,23 @@ function readCustom(){
   if(isNaN(c))c=1;c=Math.max(-5,Math.min(30,c));
   return {name:n,cost:c};
 }
-function addLog(k,name,cost){
-  const d=ensureDay(k);const e={id:uid(),name,cost,t:Date.now()};d.log.push(e);persist('d-'+k);render();
-  toast(`${name}: ${cost<0?'+'+(-cost):'−'+cost} ${L(cost)}`,{k,id:e.id,type:'log'});
+function addItem(name,cost){
+  const d=ensureDay(cur);const id=uid();
+  if(sheet==='plan'){d.plan.push({id,name,cost});persist('d-'+cur);closeSheet();if(view!=='heute')location.hash='heute';render();toast(`${name} geplant`,{k:cur,id,type:'plan'})}
+  else{d.log.push({id,name,cost,t:Date.now()});persist('d-'+cur);closeSheet();if(view!=='heute')location.hash='heute';render();toast(`${name}: ${cost<0?'+'+(-cost):'−'+cost} Löffel`,{k:cur,id,type:'log'})}
 }
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-a]');if(!b)return;
   const a=b.dataset.a,dk='d-'+cur;
   switch(a){
+    case 'sheet':openSheet();break;
+    case 'sheet-close':closeSheet();break;
+    case 'sheet-mode':sheet=b.dataset.m;renderSheet();break;
+    case 'pick':{const x=findAct(b.dataset.id);if(x)addItem(x.name,x.cost);break}
+    case 'pick-custom':{const c=readCustom();if(c)addItem(c.name,c.cost);break}
     case 'day':{const n=+b.dataset.d;cur=n===0?todayKey():addDays(cur,n);ci={sleep:null,sym:null,adj:0};render();break}
-    case 'log':{const x=findAct(b.dataset.id);if(x)addLog(cur,x.name,x.cost);break}
-    case 'log-custom':{const c=readCustom();if(c)addLog(cur,c.name,c.cost);break}
     case 'log-del':{const d=ensureDay(cur);d.log=d.log.filter(x=>x.id!==b.dataset.id);persist(dk);render();break}
-    case 'undo':{if(lastUndo){const d=S.days[lastUndo.k];if(d){d.log=d.log.filter(x=>x.id!==lastUndo.id);persist('d-'+lastUndo.k)}lastUndo=null;$('#toast').innerHTML='';render()}break}
-    case 'plan-add':{const x=findAct(b.dataset.id);if(x){ensureDay(cur).plan.push({id:uid(),name:x.name,cost:x.cost});persist(dk);render()}break}
-    case 'plan-custom':{const c=readCustom();if(c){ensureDay(cur).plan.push({id:uid(),...c});persist(dk);render()}break}
+    case 'undo':{if(lastUndo){const d=S.days[lastUndo.k];if(d){const f=lastUndo.type==='plan'?'plan':'log';d[f]=d[f].filter(x=>x.id!==lastUndo.id);persist('d-'+lastUndo.k)}lastUndo=null;$('#toast').innerHTML='';render()}break}
     case 'plan-del':{const d=ensureDay(cur);d.plan=d.plan.filter(x=>x.id!==b.dataset.id);persist(dk);render();break}
     case 'plan-done':{const d=ensureDay(cur);const p=d.plan.find(x=>x.id===b.dataset.id);if(p){d.plan=d.plan.filter(x=>x!==p);d.log.push({id:uid(),name:p.name,cost:p.cost,t:Date.now()});persist(dk);render();toast(`${p.name} erledigt`)}break}
     case 'ci':{const k=b.dataset.k,v=+b.dataset.v;ci[k]=ci[k]===v?null:v;render();break}
@@ -527,8 +557,8 @@ document.addEventListener('click',e=>{
     case 'act-del':{S.settings.acts=S.settings.acts.filter(x=>x.id!==b.dataset.id);persist('settings');render();break}
     case 'export':{
       const txt=JSON.stringify(S);
-      const done=()=>toast('Sicherung kopiert. Füge sie z. B. in eine Notiz ein.');
-      try{navigator.clipboard.writeText(txt).then(done,()=>{$('#imp').value=txt;$('#imp').select();toast('Markiert – jetzt selbst kopieren.')})}catch(err){$('#imp').value=txt;$('#imp').select();toast('Markiert – jetzt selbst kopieren.')}
+      const manual=()=>{$('#imp').value=txt;$('#imp').select();toast('Markiert – jetzt selbst kopieren.')};
+      try{navigator.clipboard.writeText(txt).then(()=>toast('Sicherung kopiert. Füge sie z. B. in eine Notiz ein.'),manual)}catch(err){manual()}
       break}
     case 'import':{
       let o;try{o=JSON.parse($('#imp').value)}catch(err){toast('Das sieht nicht wie eine Sicherung aus.');break}
@@ -544,7 +574,7 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('change',e=>{
   const f=e.target.dataset&&e.target.dataset.f;if(!f)return;
-  if(f==='crash'){ensureDay(cur).crash=e.target.checked;persist('d-'+cur)}
+  if(f==='crash'){ensureDay(cur).crash=e.target.checked;persist('d-'+cur);render()}
   if(f==='act-name'){const x=findAct(e.target.dataset.id);if(x){x.name=e.target.value.trim()||x.name;persist('settings')}}
   if(f==='act-cost'){const x=findAct(e.target.dataset.id);if(x){let c=parseInt(e.target.value,10);if(isNaN(c))c=x.cost;x.cost=Math.max(-5,Math.min(30,c));persist('settings')}}
 });
@@ -552,8 +582,8 @@ document.addEventListener('input',e=>{
   if(e.target.dataset&&e.target.dataset.f==='note'){ensureDay(cur).note=e.target.value;persist('d-'+cur)}
 });
 document.addEventListener('keydown',e=>{
-  if(e.key==='Enter'&&e.target.id==='cname'){const btn=document.querySelector('[data-a="log-custom"],[data-a="plan-custom"]');if(btn)btn.click()}
-  if(e.key==='Escape'&&$('#modal').innerHTML){$('#modal').innerHTML=''}
+  if(e.key==='Enter'&&e.target.id==='cname'){const btn=document.querySelector('[data-a="pick-custom"]');if(btn)btn.click()}
+  if(e.key==='Escape'){if($('#modal').innerHTML)$('#modal').innerHTML='';else if(sheet)closeSheet()}
 });
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(VIEWS.includes(h)){view=h;render();window.scrollTo(0,0)}});
 
